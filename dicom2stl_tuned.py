@@ -76,6 +76,7 @@ LOWQUALITY_SLICES_TH = 160
 
 WITH_DUPLICATES = True
 
+SINGLE_DIR = False
 
 def usage():
     print("""
@@ -93,6 +94,7 @@ def usage():
         -s string, --search string    Dicom series search string
         -q, --qualityt     Threshold of slices # - to omit low quaility studies (default=160)
         -k, --no-duplicates    If no duplicates (by patientsID) are desired
+        --single-dir           Do not walk by subdirectories, process files from parent dir
 
         Volume processing options:
 
@@ -121,7 +123,7 @@ try:
     opts, args = getopt.getopt(sys.argv[1:], "vDhacli:s:t:d:o:m:T:q:k:f:",
                                ["verbose", "help", "debug", "anisotropic", "clean", "ct", "isovalue=", "search=", "type=",
                                 "double=", "disable=", "enable=", "largest", "metadata", "rotaxis=", "rotangle=", "smooth=",
-                                "reduce=", "temp=", "qualityt=", "no-duplicates", "no-connectfilter"])
+                                "reduce=", "temp=", "qualityt=", "no-duplicates", "no-connectfilter", "single-dir"])
 except getopt.GetoptError as err:
     print(str(err))
     usage()
@@ -181,6 +183,8 @@ for o, a in opts:
         WITH_DUPLICATES = False
     elif o in ("-f", "--no-connectfilter"):
         connectivityFilter = False
+    elif o in ("--single-dir"):
+        SINGLE_DIR = True
     else:
         assert False, "unhandled options"
 
@@ -209,7 +213,7 @@ outname = outname + '/' if outname[-1] != '/' else outname
 # Process all subfolders of given input folder
 parent_dir = args
 dirs = os.listdir(parent_dir[0])
-sub_dirs = [dir_ for dir_ in dirs if not dir_.startswith('.')]
+sub_dirs = [""] if SINGLE_DIR else [dir_ for dir_ in dirs if not dir_.startswith('.')]
 counter = 0
 errors = 0
 lowq = 0

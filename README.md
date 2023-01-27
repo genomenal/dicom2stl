@@ -96,6 +96,8 @@ input_parent_folder
 ...
 ```
 
+If passed option --single-dir, script will process DICOM files from **input_parent_folder**.
+
 **Tuneable parameters:**
 
 These parameters can be changed by giving the following flags, by default it has the best values
